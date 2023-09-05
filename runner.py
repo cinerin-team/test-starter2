@@ -11,7 +11,7 @@ def create_command(param):
     if "build" in param.keys():
         result = result + " --build-id " + param["build"]
     if "tc" in param.keys() and "constraints" in param.keys():
-        result = result + " --test-case \"" + param["tc"] + " " + param["constraints"] + "\""
+        result = result + " --test-case \"" + param["tc"] + " : " + param["constraints"] + "\""
     if "node_type" in param.keys():
         result = result + " --node-type " + param["node_type"]
 
