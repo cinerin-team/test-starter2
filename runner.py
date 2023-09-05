@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 from datetime import datetime
 
@@ -22,7 +21,7 @@ def create_command(param):
 
 
 def write_out_file(id_list):
-    of = open(datetime.now().strftime("%Y-%m-%d-_%H-%M-%S") + "result.txt", "w")
+    of = open(datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt", "w")
     for item in id_list:
         of.write(str(item) + ", ")
     of.close()
@@ -38,9 +37,9 @@ for file in dir_list:
         output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = output.communicate()
-        # print(out)
-        mo = re.match(r'Enqueued job with id: (\d+)', str(out))
-        if mo:
-            job_ids.append(mo.group(1))
+        print(str(out))
+        # mo = re.match(r'\w+Enqueued job with id: (\w{8}) \w+', str(out))
+        # if mo:
+        #     job_ids.append(mo.group(1))
 
 write_out_file(job_ids)
