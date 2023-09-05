@@ -1,9 +1,12 @@
 import os
+import re
 import subprocess
+from datetime import datetime
 
 path = "configs"
 dir_list = os.listdir(path)
 conf = {}
+job_ids = []
 
 
 def create_command(param):
@@ -18,14 +21,26 @@ def create_command(param):
     return result
 
 
-for file in dir_list:
-    conf.clear()
-    f = open(path + "/" + file, "r")
-    for line in f.readlines():
-        conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
+def write_out_file(id_list):
+    of = open(datetime.now().strftime("%Y-%m-%d-_%H-%M-%S") + "result.txt", "w")
+    for item in id_list:
+        of.write(str(item) + ", ")
+    of.close()
 
-    output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    out, err = output.communicate()
-    print(out)
-    print(err)
+
+for file in dir_list:
+    if file.endswith(".config"):
+        conf.clear()
+        f = open(path + "/" + file, "r")
+        for line in f.readlines():
+            conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
+
+        output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, err = output.communicate()
+        # print(out)
+        mo = re.match(r'Enqueued job with id: (\d+)', str(out))
+        if mo:
+            job_ids.append(mo.group(1))
+
+write_out_file(job_ids)
