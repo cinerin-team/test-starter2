@@ -12,10 +12,14 @@ def create_command(param):
     result = "autott"
     if "build" in param.keys():
         result = result + " --build-id " + param["build"]
-    if "tc" in param.keys() and "constraints" in param.keys():
-        result = result + " --test-case \"" + param["tc"] + " : " + param["constraints"] + "\""
+    if "tc" in param.keys() and "command" in param.keys():
+        result = result + " --test-case \"" + param["tc"] + " : " + param["command"] + "\""
     if "node_type" in param.keys():
         result = result + " --node-type " + param["node_type"]
+    if "resource" in param.keys():
+        result = result + " --resource " + param["resource"]
+    if "model" in param.keys():
+        result = result + " --constraints [(model ==" + param["model"] + ")]"
 
     return result
 

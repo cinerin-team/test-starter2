@@ -1,4 +1,4 @@
 tc: TC37553.1.6.8
 node_type: cots_16_host_sriovflat_25intel
-constraints: go --duration=10h
+command: go --duration=10h
 build: EPG_28R190FE1_230823_155500

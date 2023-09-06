@@ -1,0 +1,5 @@
+tc: TC2020.5.7.1.1
+node_type: SSR-HW
+command: go --duration=12h
+build: EPG_28R190FE1_230823_155500
+resource: epg8-4
