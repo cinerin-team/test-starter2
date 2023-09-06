@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from datetime import datetime
 
@@ -37,7 +38,7 @@ for file in dir_list:
         f = open(path + "/" + file, "r")
         for line in f.readlines():
             conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-
+        print("queue_run2.py " + create_command(conf))
         output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = output.communicate()
