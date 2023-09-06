@@ -1,0 +1,4 @@
+tc: TC37512.4.6.10.11
+node_type: cots_16_host_sriovflat_25intel
+command: go
+build: EPG_28R201HY1_230901_100413

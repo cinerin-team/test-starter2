@@ -1,0 +1,5 @@
+tc: TC37512.4.6.11.23
+node_type: cots_1_host_C14_U20vcpu_sriov
+command: go
+build: EPG_28R201HY1_230901_100413
+model: Dell640-18

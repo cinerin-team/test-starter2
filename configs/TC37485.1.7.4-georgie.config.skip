@@ -1,0 +1,4 @@
+tc: TC37485.1.7.4
+node_type: ssr-hw_ssc3
+command: go --duration=12h
+build: EPG_28R201HY1_230901_100413
