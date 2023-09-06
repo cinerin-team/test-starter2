@@ -19,7 +19,7 @@ def create_command(param):
     if "resource" in param.keys():
         result = result + " --resource " + param["resource"]
     if "model" in param.keys():
-        result = result + " --constraints [(model ==" + param["model"] + ")]"
+        result = result + " --constraints \'[(model == \"" + param["model"] + "\")]\'"
 
     return result
 
