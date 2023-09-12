@@ -1,7 +1,7 @@
 tc: mandantory with command
 node_type: mandantory
 command: mandantory with tc id
-build: mandantory or use the command line input for all configs like python runner.py "EPG_28R201HY1_230901_100413"
+build: mandantory or use the command line input for all configs like "python runner.py EPG_28R201HY1_230901_100413". console inpout overrides config setting
 model: optional
 resource: optional
 epg_path: optional

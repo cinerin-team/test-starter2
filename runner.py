@@ -49,13 +49,13 @@ for file in dir_list:
         f = open(path + "/" + file, "r")
         for line in f.readlines():
             conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-        # print("queue_run2.py " + create_command(conf, sys.argv))
+        print("executing: queue_run2.py " + create_command(conf, sys.argv))
         output = subprocess.Popen(["queue_run2.py " + create_command(conf, sys.argv)],
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = output.communicate()
         # print(out)
         out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
-        id = out.split("id: ")[1].split(" and")[0]
-        job_ids.append(id)
+        job_id = out.split("Enqueued job with id: ")[1].split(" and with split")[0]
+        job_ids.append(job_id)
 
 write_out_file(job_ids)
