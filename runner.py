@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 import sys
 from datetime import datetime
@@ -36,10 +35,12 @@ def create_command(param, args):
 
 
 def write_out_file(id_list):
-    of = open(datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt", "w")
+    name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt"
+    of = open(name, "w")
     for item in id_list:
-        of.write(str(item) + ", ")
+        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item) + "\n")
     of.close()
+    print("report file generated: " + name)
 
 
 for file in dir_list:
@@ -48,13 +49,13 @@ for file in dir_list:
         f = open(path + "/" + file, "r")
         for line in f.readlines():
             conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-        print("queue_run2.py " + create_command(conf, sys.argv))
+        # print("queue_run2.py " + create_command(conf, sys.argv))
         output = subprocess.Popen(["queue_run2.py " + create_command(conf, sys.argv)],
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = output.communicate()
-        print(str(out))
-        # mo = re.match(r'\w+Enqueued job with id: (\w{8}) \w+', str(out))
-        # if mo:
-        #     job_ids.append(mo.group(1))
+        # print(out)
+        out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
+        id = out.split("id: ")[1].split(" and")[0]
+        job_ids.append(id)
 
-# write_out_file(job_ids)
+write_out_file(job_ids)
