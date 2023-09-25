@@ -23,7 +23,8 @@ def create_command(param, args):
     if "resource" in param.keys():
         result = result + " --resource " + param["resource"]
     if "model" in param.keys():
-        result = result + " --constraints \'[(model == \"" + param["model"] + "\")]\'"
+        result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
+                 param["node_type"] + "\") && (model == \"" + param["model"] + "\"))]\'"
     if "epg_path" in param.keys():
         result = result + " --epgcats-path \'" + param["epg_path"] + "\'"
     if "dallas-path" in param.keys():
