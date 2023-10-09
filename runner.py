@@ -1,7 +1,6 @@
 import argparse
 import os
 import subprocess
-import sys
 from datetime import datetime
 
 
@@ -69,31 +68,31 @@ if __name__ == "__main__":
     job_ids = []
     parser = argparse.ArgumentParser(
         description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The stronger is the commandline parameter to the config file.")
-    parser.add_argument('-bi', "--build-id",
+    parser.add_argument('-bi', "--build-id", dest='bi',
                         help="specific build ID should be selected, not the config file's content. for example: --build-id EPG_28R190FE1_230823_155500",
                         required=False)
-    parser.add_argument('-tc', "--test-case",
+    parser.add_argument('-tc', "--test-case", dest='tc',
                         help="specific TC should be executed, but use this with --command switch. for example: --test-case TC37512.4.6.11.23",
                         required=False)
-    parser.add_argument('-c', "--command",
+    parser.add_argument('-c', "--command", dest='c',
                         help="if the TC needs a specific running command, but use this with --test-case switch. for example: --command \"go --duration=16h\"",
                         required=False)
-    parser.add_argument('-n', "--node-type",
+    parser.add_argument('-n', "--node-type", dest='n',
                         help="select the node pool. for example: --node-type cots_1_host_C14_U20vcpu_sriov",
                         required=False)
-    parser.add_argument('-r', "--resource",
+    parser.add_argument('-r', "--resource", dest='r',
                         help="if there is booked node. for example: --resource epg8-4",
                         required=False)
-    parser.add_argument('-m', "--model",
+    parser.add_argument('-m', "--model", dest='m',
                         help="in the node constraints if model should be selected. for example: --model Dell640-18",
                         required=False)
-    parser.add_argument('-e', "--epgcats-path",
+    parser.add_argument('-e', "--epgcats-path", dest='e',
                         help="for advanced configuration, to run on private EPGCATS. for example: --epgcats-path \"/lab/epg_st_logs/<user>/paths\"",
                         required=False)
-    parser.add_argument('-d', "--dallas-path",
+    parser.add_argument('-d', "--dallas-path", dest='d',
                         help="to run on specific dallas path",
                         required=False)
-    parser.add_argument('-a', "--autott-path",
+    parser.add_argument('-a', "--autott-path", dest='a',
                         help="to run on specific autott path.",
                         required=False)
 
