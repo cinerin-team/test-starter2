@@ -6,45 +6,45 @@ from datetime import datetime
 
 def create_command(param, arg):
     result = "autott"
-    if "build" in param.keys() or arg.bi != "":
-        if arg.bi != "":
+    if "build" in param.keys() or arg.bi is not None:
+        if arg.bi is not None:
             result = result + " --build-id " + arg.bi
         else:
             result = result + " --build-id " + param["build"]
-    if ("tc" in param.keys() and "command" in param.keys()) or (arg.tc != "" and arg.c != ""):
-        if arg.tc != "":
+    if ("tc" in param.keys() and "command" in param.keys()) or (arg.tc is not None and arg.c is not None):
+        if arg.tc is not None:
             result = result + " --test-case \"" + arg.tc + " : " + arg.c + "\""
         else:
             result = result + " --test-case \"" + param["tc"] + " : " + param["command"] + "\""
-    if "node_type" in param.keys() or arg.n != "":
-        if arg.n != "":
+    if "node_type" in param.keys() or arg.n is not None:
+        if arg.n is not None:
             result = result + " --node-type " + arg.n
         else:
             result = result + " --node-type " + param["node_type"]
-    if "resource" in param.keys() or arg.r != "":
-        if arg.r != "":
+    if "resource" in param.keys() or arg.r is not None:
+        if arg.r is not None:
             result = result + " --resource " + arg.r
         else:
             result = result + " --resource " + param["resource"]
-    if "model" in param.keys() or arg.m != "":
-        if arg.m != "":
+    if "model" in param.keys() or arg.m is not None:
+        if arg.m is not None:
             result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
                      arg.n + "\") && (model == \"" + arg.m + "\"))]\'"
         else:
             result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
                      param["node_type"] + "\") && (model == \"" + param["model"] + "\"))]\'"
-    if "epg_path" in param.keys() or arg.e != "":
-        if arg.e != "":
+    if "epg_path" in param.keys() or arg.e is not None:
+        if arg.e is not None:
             result = result + " --epgcats-path \'" + arg.e + "\'"
         else:
             result = result + " --epgcats-path \'" + param["epg_path"] + "\'"
-    if "dallas-path" in param.keys() or arg.d != "":
-        if arg.d != "":
+    if "dallas-path" in param.keys() or arg.d is not None:
+        if arg.d is not None:
             result = result + " --dallas-path \'" + arg.d + "\'"
         else:
             result = result + " --dallas-path \'" + param["dallas-path"] + "\'"
-    if "autott-path" in param.keys() or arg.a:
-        if arg.a != "":
+    if "autott-path" in param.keys() or arg.a is not None:
+        if arg.a is not None:
             result = result + " --autott-path \'" + arg.a + "\'"
         else:
             result = result + " --autott-path \'" + param["autott-path"] + "\'"
