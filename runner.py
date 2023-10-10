@@ -78,12 +78,12 @@ def write_out_file(id_list):
     name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt"
     of = open(name, "w")
     for item in id_list:
-        of.write("---------------------\n")
-        of.write("Build-id: " + item["bi"] + "\n")
-        of.write("Test Case: " + item["tc"] + "\n")
-        of.write("Node Type: " + item["n"] + "\n")
-        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["ji"]) + "\n")
-        of.write("---------------------\n")
+        of.write("---------------------")
+        of.write("Build-id: " + item["bi"])
+        of.write("Test Case: " + item["tc"])
+        of.write("Node Type: " + item["n"])
+        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["ji"]))
+        of.write("---------------------")
     of.close()
     print("report file generated: " + name)
     of = open(name, "r")
