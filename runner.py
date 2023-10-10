@@ -6,23 +6,23 @@ from datetime import datetime
 
 def create_command(config):
     result = "autott"
-    if "bi" in config.keys():
-        result = result + " --build-id " + config["bi"]
-    if "c" in config.keys():
-        result = result + " --test-case \"" + config["tc"] + " : " + config["c"] + "\""
-    if "n" in config.keys():
-        result = result + " --node-type " + config["n"]
-    if "r" in config.keys():
-        result = result + " --resource " + config["r"]
-    if "m" in config.keys():
+    if "buildid" in config.keys():
+        result = result + " --build-id " + config["buildid"]
+    if "testcase" in config.keys():
+        result = result + " --test-case \"" + config["testcase"] + " : " + config["command"] + "\""
+    if "nodetype" in config.keys():
+        result = result + " --node-type " + config["nodetype"]
+    if "resource" in config.keys():
+        result = result + " --resource " + config["resource"]
+    if "model" in config.keys():
         result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
-                 config["n"] + "\") && (model == \"" + config["m"] + "\"))]\'"
-    if "e" in config.keys():
-        result = result + " --epgcats-path \'" + config["e"] + "\'"
-    if "d" in config.keys():
-        result = result + " --dallas-path \'" + config["d"] + "\'"
-    if "a" in config.keys():
-        result = result + " --autott-path \'" + config["a"] + "\'"
+                 config["nodetype"] + "\") && (model == \"" + config["model"] + "\"))]\'"
+    if "epgpath" in config.keys():
+        result = result + " --epgcats-path \'" + config["epgpath"] + "\'"
+    if "dallaspath" in config.keys():
+        result = result + " --dallas-path \'" + config["dallaspath"] + "\'"
+    if "autottpath" in config.keys():
+        result = result + " --autott-path \'" + config["autottpath"] + "\'"
 
     return result
 
@@ -30,59 +30,59 @@ def create_command(config):
 def aggregate_data(config, arg):
     result = {}
     if arg.bi is not None:
-        result["bi"] = arg.bi
+        result["buildid"] = arg.bi
     elif "build" in config.keys():
-        result["bi"] = config["build"]
+        result["buildid"] = config["build"]
 
     if arg.c is not None:
-        result["c"] = arg.c
-        result["tc"] = arg.tc
+        result["command"] = arg.c
+        result["testcase"] = arg.tc
     elif "command" in config.keys():
-        result["c"] = config["command"]
-        result["tc"] = config["tc"]
+        result["command"] = config["command"]
+        result["testcase"] = config["tc"]
 
     if arg.n is not None:
-        result["n"] = arg.n
+        result["nodetype"] = arg.n
     elif "build" in config.keys():
-        result["n"] = config["node_type"]
+        result["nodetype"] = config["node_type"]
 
     if arg.r is not None:
-        result["r"] = arg.r
+        result["resource"] = arg.r
     elif "resource" in config.keys():
-        result["r"] = config["resource"]
+        result["resource"] = config["resource"]
 
     if arg.m is not None:
-        result["m"] = arg.m
+        result["model"] = arg.m
     elif "model" in config.keys():
-        result["m"] = config["model"]
+        result["model"] = config["model"]
 
     if arg.e is not None:
-        result["e"] = arg.e
+        result["epgpath"] = arg.e
     elif "epg_path" in config.keys():
-        result["e"] = config["epg_path"]
+        result["epgpath"] = config["epg_path"]
 
     if arg.d is not None:
-        result["d"] = arg.d
+        result["dallaspath"] = arg.d
     elif "dallas-path" in config.keys():
-        result["d"] = config["dallas-path"]
+        result["dallaspath"] = config["dallas-path"]
 
     if arg.a is not None:
-        result["a"] = arg.a
+        result["autottpath"] = arg.a
     elif "autott-path" in config.keys():
-        result["a"] = config["autott-path"]
+        result["autottpath"] = config["autott-path"]
 
     return result
 
 
-def write_out_file(id_list):
+def write_out_file(config_list):
     name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt"
     of = open(name, "w")
-    for item in id_list:
+    for item in config_list:
         of.write("---------------------\n")
-        of.write("Build-id: " + item["bi"] + "\n")
-        of.write("Test Case: " + item["tc"] + "\n")
-        of.write("Node Type: " + item["n"] + "\n")
-        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["ji"]) + "\n")
+        of.write("Build-id: " + item["buildid"] + "\n")
+        of.write("Test Case: " + item["testcase"] + "\n")
+        of.write("Node Type: " + item["nodetype"] + "\n")
+        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["jobid"]) + "\n")
         of.write("---------------------\n")
     of.close()
     print("report file generated: " + name)
@@ -92,12 +92,7 @@ def write_out_file(id_list):
     of.close()
 
 
-if __name__ == "__main__":
-    path = "configs"
-    dir_list = os.listdir(path)
-    conf = {}
-    job_ids = []
-    actual_conf = {}
+def local_argument_parser():
     parser = argparse.ArgumentParser(
         description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The commandline parameter overrides the config file.")
     parser.add_argument('-bi', "--build-id", dest='bi',
@@ -128,23 +123,39 @@ if __name__ == "__main__":
                         help="to run on specific autott path.",
                         required=False)
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def communication_and_getting_job_ig(actual_conf):
+    print("executing: queue_run2.py " + create_command(actual_conf))
+    output = subprocess.Popen(["queue_run2.py " + create_command(actual_conf)],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    out, err = output.communicate()
+    # print(out)
+    out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
+
+    return out.split("Enqueued job with id: ")[1].split(" and with split")[0]
+
+
+if __name__ == "__main__":
+    path = "configs"
+    dir_list = os.listdir(path)
+    conf_file_content = {}
+    configs = []
+    actual_conf = {}
+
+    argument_line_content = local_argument_parser()
     for file in dir_list:
         if file.endswith(".config"):
-            conf.clear()
+            conf_file_content.clear()
             actual_conf.clear()
             f = open(path + "/" + file, "r")
             for line in f.readlines():
-                conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-            actual_conf = aggregate_data(conf, args)
-            print("executing: queue_run2.py " + create_command(actual_conf))
-            output = subprocess.Popen(["queue_run2.py " + create_command(actual_conf)],
-                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            out, err = output.communicate()
-            # print(out)
-            out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
-            job_id = out.split("Enqueued job with id: ")[1].split(" and with split")[0]
-            actual_conf["ji"] = job_id
-            job_ids.append(actual_conf)
+                conf_file_content[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
+            actual_conf = aggregate_data(conf_file_content, argument_line_content)
+            job_id = communication_and_getting_job_ig(actual_conf)
+            actual_conf["jobid"] = job_id
+            configs.append(
+                actual_conf.copy())  # copy is needed because without it when we clear the actual_conf, the array item will be cleared as well
 
-    write_out_file(job_ids)
+    write_out_file(configs)
