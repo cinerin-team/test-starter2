@@ -126,9 +126,9 @@ def local_argument_parser():
     return parser.parse_args()
 
 
-def communication_and_getting_job_ig(actual_conf):
-    print("executing: queue_run2.py " + create_command(actual_conf))
-    output = subprocess.Popen(["queue_run2.py " + create_command(actual_conf)],
+def communication_and_getting_job_ig(conf):
+    print("executing: queue_run2.py " + create_command(conf))
+    output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out, err = output.communicate()
     # print(out)
