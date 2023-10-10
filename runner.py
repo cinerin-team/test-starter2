@@ -78,9 +78,17 @@ def write_out_file(id_list):
     name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + "-result.txt"
     of = open(name, "w")
     for item in id_list:
-        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item) + "\n")
+        of.write("---------------------\n")
+        of.write("Build-id: " + item["bi"] + "\n")
+        of.write("Test Case: " + item["tc"] + "\n")
+        of.write("Node Type: " + item["n"] + "\n")
+        of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["ji"]) + "\n")
+        of.write("---------------------\n")
     of.close()
     print("report file generated: " + name)
+    of = open(name, "r")
+    for one_line in of.readline():
+        print(one_line)
 
 
 if __name__ == "__main__":
@@ -88,6 +96,7 @@ if __name__ == "__main__":
     dir_list = os.listdir(path)
     conf = {}
     job_ids = []
+    actual_conf = {}
     parser = argparse.ArgumentParser(
         description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The commandline parameter overrides the config file.")
     parser.add_argument('-bi', "--build-id", dest='bi',
@@ -122,16 +131,19 @@ if __name__ == "__main__":
     for file in dir_list:
         if file.endswith(".config"):
             conf.clear()
+            actual_conf.clear()
             f = open(path + "/" + file, "r")
             for line in f.readlines():
                 conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-            print("executing: queue_run2.py " + create_command(aggregate_data(conf, args)))
-            output = subprocess.Popen(["queue_run2.py " + create_command(aggregate_data(conf, args))],
+            actual_conf = aggregate_data(conf, args)
+            print("executing: queue_run2.py " + create_command(actual_conf))
+            output = subprocess.Popen(["queue_run2.py " + create_command(actual_conf)],
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, err = output.communicate()
             # print(out)
             out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
             job_id = out.split("Enqueued job with id: ")[1].split(" and with split")[0]
-            job_ids.append(job_id)
+            actual_conf["ji"] = job_id
+            job_ids.append(actual_conf)
 
     write_out_file(job_ids)
