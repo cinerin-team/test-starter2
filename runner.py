@@ -87,8 +87,9 @@ def write_out_file(id_list):
     of.close()
     print("report file generated: " + name)
     of = open(name, "r")
-    for one_line in of.readline():
+    for one_line in of:
         print(one_line)
+    of.close()
 
 
 if __name__ == "__main__":
