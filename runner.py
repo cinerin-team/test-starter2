@@ -4,50 +4,72 @@ import subprocess
 from datetime import datetime
 
 
-def create_command(param, arg):
+def create_command(config):
     result = "autott"
-    if "build" in param.keys() or arg.bi is not None:
-        if arg.bi is not None:
-            result = result + " --build-id " + arg.bi
-        else:
-            result = result + " --build-id " + param["build"]
-    if ("tc" in param.keys() and "command" in param.keys()) or (arg.tc is not None and arg.c is not None):
-        if arg.tc is not None:
-            result = result + " --test-case \"" + arg.tc + " : " + arg.c + "\""
-        else:
-            result = result + " --test-case \"" + param["tc"] + " : " + param["command"] + "\""
-    if "node_type" in param.keys() or arg.n is not None:
-        if arg.n is not None:
-            result = result + " --node-type " + arg.n
-        else:
-            result = result + " --node-type " + param["node_type"]
-    if "resource" in param.keys() or arg.r is not None:
-        if arg.r is not None:
-            result = result + " --resource " + arg.r
-        else:
-            result = result + " --resource " + param["resource"]
-    if "model" in param.keys() or arg.m is not None:
-        if arg.m is not None:
-            result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
-                     arg.n + "\") && (model == \"" + arg.m + "\"))]\'"
-        else:
-            result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
-                     param["node_type"] + "\") && (model == \"" + param["model"] + "\"))]\'"
-    if "epg_path" in param.keys() or arg.e is not None:
-        if arg.e is not None:
-            result = result + " --epgcats-path \'" + arg.e + "\'"
-        else:
-            result = result + " --epgcats-path \'" + param["epg_path"] + "\'"
-    if "dallas-path" in param.keys() or arg.d is not None:
-        if arg.d is not None:
-            result = result + " --dallas-path \'" + arg.d + "\'"
-        else:
-            result = result + " --dallas-path \'" + param["dallas-path"] + "\'"
-    if "autott-path" in param.keys() or arg.a is not None:
-        if arg.a is not None:
-            result = result + " --autott-path \'" + arg.a + "\'"
-        else:
-            result = result + " --autott-path \'" + param["autott-path"] + "\'"
+    if "bi" in config.keys():
+        result = result + " --build-id " + config["bi"]
+    if "c" in config.keys():
+        result = result + " --test-case \"" + config["tc"] + " : " + config["c"] + "\""
+    if "n" in config.keys():
+        result = result + " --node-type " + config["n"]
+    if "r" in config.keys():
+        result = result + " --resource " + config["r"]
+    if "m" in config.keys():
+        result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
+                 config["n"] + "\") && (model == \"" + config["m"] + "\"))]\'"
+    if "e" in config.keys():
+        result = result + " --epgcats-path \'" + config["e"] + "\'"
+    if "d" in config.keys():
+        result = result + " --dallas-path \'" + config["d"] + "\'"
+    if "a" in config.keys():
+        result = result + " --autott-path \'" + config["a"] + "\'"
+
+    return result
+
+
+def aggregate_data(config, arg):
+    result = {}
+    if arg.bi is not None:
+        result["bi"] = arg.bi
+    elif "build" in config.keys():
+        result["bi"] = config["build"]
+
+    if arg.c is not None:
+        result["c"] = arg.c
+        result["tc"] = arg.tc
+    elif "command" in config.keys():
+        result["c"] = config["command"]
+        result["tc"] = config["tc"]
+
+    if arg.n is not None:
+        result["n"] = arg.n
+    elif "build" in config.keys():
+        result["n"] = config["node_type"]
+
+    if arg.r is not None:
+        result["r"] = arg.r
+    elif "resource" in config.keys():
+        result["r"] = config["resource"]
+
+    if arg.m is not None:
+        result["m"] = arg.m
+    elif "model" in config.keys():
+        result["m"] = config["model"]
+
+    if arg.e is not None:
+        result["e"] = arg.e
+    elif "epg_path" in config.keys():
+        result["e"] = config["epg_path"]
+
+    if arg.d is not None:
+        result["d"] = arg.d
+    elif "dallas-path" in config.keys():
+        result["d"] = config["dallas-path"]
+
+    if arg.a is not None:
+        result["a"] = arg.a
+    elif "autott-path" in config.keys():
+        result["a"] = config["autott-path"]
 
     return result
 
@@ -67,7 +89,7 @@ if __name__ == "__main__":
     conf = {}
     job_ids = []
     parser = argparse.ArgumentParser(
-        description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The stronger is the commandline parameter to the config file.")
+        description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The commandline parameter overrides the config file.")
     parser.add_argument('-bi', "--build-id", dest='bi',
                         help="specific build ID should be selected, not the config file's content. for example: --build-id EPG_28R190FE1_230823_155500",
                         required=False)
@@ -103,8 +125,8 @@ if __name__ == "__main__":
             f = open(path + "/" + file, "r")
             for line in f.readlines():
                 conf[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-            print("executing: queue_run2.py " + create_command(conf, args))
-            output = subprocess.Popen(["queue_run2.py " + create_command(conf, args)],
+            print("executing: queue_run2.py " + create_command(aggregate_data(conf, args)))
+            output = subprocess.Popen(["queue_run2.py " + create_command(aggregate_data(conf, args))],
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             out, err = output.communicate()
             # print(out)
