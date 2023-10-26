@@ -126,7 +126,7 @@ def local_argument_parser():
     return parser.parse_args()
 
 
-def communication_and_getting_job_ig(conf):
+def communication_and_getting_job_id(conf):
     print("executing: queue_run2.py " + create_command(conf))
     output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -137,14 +137,26 @@ def communication_and_getting_job_ig(conf):
     return out.split("Enqueued job with id: ")[1].split(" and with split")[0]
 
 
+def execute_commands(command_list_loc, configs):
+    for comm in command_list_loc:
+        job_id = communication_and_getting_job_id(comm)
+        comm["jobid"] = job_id
+        configs.append(
+            comm.copy())  # copy is needed because without it when we clear the actual_conf, the array item will be cleared as well
+
+    write_out_file(configs)
+
+
 if __name__ == "__main__":
     path = "configs"
     dir_list = os.listdir(path)
     conf_file_content = {}
     configs = []
     actual_conf = {}
+    command_list = []
 
     argument_line_content = local_argument_parser()
+    file_counter = 0
     for file in dir_list:
         if file.endswith(".config"):
             conf_file_content.clear()
@@ -153,9 +165,11 @@ if __name__ == "__main__":
             for line in f.readlines():
                 conf_file_content[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
             actual_conf = aggregate_data(conf_file_content, argument_line_content)
-            job_id = communication_and_getting_job_ig(actual_conf)
-            actual_conf["jobid"] = job_id
-            configs.append(
-                actual_conf.copy())  # copy is needed because without it when we clear the actual_conf, the array item will be cleared as well
+            command_list.append(actual_conf)
+            file_counter += 1
 
-    write_out_file(configs)
+    if file_counter == 0:
+        actual_conf = aggregate_data(conf_file_content, argument_line_content)
+        command_list.append(actual_conf)
+
+    execute_commands(command_list, configs)
