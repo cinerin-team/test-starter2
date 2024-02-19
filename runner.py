@@ -18,11 +18,11 @@ def create_command(config):
         result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
                  config["nodetype"] + "\") && (model == \"" + config["model"] + "\"))]\'"
     if "epg_path" in config.keys():
-        result = result + " --epgcats-path \'" + config["epg_path"] + "\'"
+        result = result + " --epgcats-path \'" + config["epgpath"] + "\'"
     if "dallas-path" in config.keys():
-        result = result + " --dallas-path \'" + config["dallas-path"] + "\'"
+        result = result + " --dallas-path \'" + config["dallaspath"] + "\'"
     if "autott-path" in config.keys():
-        result = result + " --autott-path \'" + config["autott-path"] + "\'"
+        result = result + " --autott-path \'" + config["autottpath"] + "\'"
 
     return result
 
