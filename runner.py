@@ -44,7 +44,7 @@ def aggregate_data(config, arg):
     if arg.n is not None:
         result["nodetype"] = arg.n
     elif "build" in config.keys():
-        result["nodetype"] = config["nodetype"]
+        result["nodetype"] = config["node_type"]
 
     if arg.r is not None:
         result["resource"] = arg.r
