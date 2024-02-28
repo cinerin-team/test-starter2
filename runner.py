@@ -64,12 +64,12 @@ def aggregate_data(config, arg):
     if arg.d is not None:
         result["dallaspath"] = arg.d
     elif "dallas-path" in config.keys():
-        result["dallaspath"] = config["dallas-path"]
+        result["dallaspath"] = config["dallaspath"]
 
     if arg.a is not None:
         result["autottpath"] = arg.a
     elif "autott-path" in config.keys():
-        result["autottpath"] = config["autott-path"]
+        result["autottpath"] = config["autottpath"]
 
     return result
 
