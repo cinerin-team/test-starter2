@@ -17,11 +17,11 @@ def create_command(config):
     if "model" in config.keys():
         result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
                  config["nodetype"] + "\") && (model == \"" + config["model"] + "\"))]\'"
-    if "epg_path" in config.keys():
+    if "epgpath" in config.keys():
         result = result + " --epgcats-path \'" + config["epgpath"] + "\'"
-    if "dallas-path" in config.keys():
+    if "dallaspath" in config.keys():
         result = result + " --dallas-path \'" + config["dallaspath"] + "\'"
-    if "autott-path" in config.keys():
+    if "autottpath" in config.keys():
         result = result + " --autott-path \'" + config["autottpath"] + "\'"
 
     return result
@@ -44,7 +44,7 @@ def aggregate_data(config, arg):
     if arg.n is not None:
         result["nodetype"] = arg.n
     elif "build" in config.keys():
-        result["nodetype"] = config["node_type"]
+        result["nodetype"] = config["nodetype"]
 
     if arg.r is not None:
         result["resource"] = arg.r
@@ -59,7 +59,7 @@ def aggregate_data(config, arg):
     if arg.e is not None:
         result["epgpath"] = arg.e
     elif "epg_path" in config.keys():
-        result["epgpath"] = config["epg_path"]
+        result["epgpath"] = config["epgpath"]
 
     if arg.d is not None:
         result["dallaspath"] = arg.d
