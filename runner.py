@@ -117,7 +117,7 @@ def local_argument_parser():
                         help="for advanced configuration, to run on private EPGCATS. for example: --epgcats-path \"/lab/epg_st_logs/<user>/paths\"",
                         required=False)
     parser.add_argument('-d', "--dallas-path", dest='d',
-                        help="to run on specific dallas path",
+                        help="to run on specific dallas path, for example: --dallas-path /lab/testtools/dallas/testRelease/eyuhkua/3R203B03_eyuhkua",
                         required=False)
     parser.add_argument('-a', "--autott-path", dest='a',
                         help="to run on specific autott path.",
