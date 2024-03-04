@@ -1,0 +1,4 @@
+tc: TC37512.6.6.17.5
+node_type: cots_2_host_sriov_100mellanox_CX6
+command: go
+build: EPG_28R239BA1_240301_120120
