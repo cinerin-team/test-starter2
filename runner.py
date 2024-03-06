@@ -10,8 +10,8 @@ def create_command(config):
         result = result + " --build-id " + config["buildid"]
     if "testcase" in config.keys():
         result = result + " --test-case \"" + config["testcase"] + " : " + config["command"] + "\""
-    if "nodetype" in config.keys():
-        result = result + " --node-type " + config["nodetype"]
+    if "node_type" in config.keys():
+        result = result + " --node-type " + config["node_type"]
     if "resource" in config.keys():
         result = result + " --resource " + config["resource"]
     if "model" in config.keys():
