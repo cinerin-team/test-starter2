@@ -16,7 +16,7 @@ def create_command(config):
         result = result + " --resource " + config["resource"]
     if "model" in config.keys():
         result = result + " --constraints \'[(((autoTT == \"1\" && node_pool == \"All teams\") && node_type == \"" + \
-                 config["nodetype"] + "\") && (model == \"" + config["model"] + "\"))]\'"
+                 config["node_type"] + "\") && (model == \"" + config["model"] + "\"))]\'"
     if "epgpath" in config.keys():
         result = result + " --epgcats-path \'" + config["epgpath"] + "\'"
     if "dallaspath" in config.keys():
