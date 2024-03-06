@@ -164,9 +164,9 @@ if __name__ == "__main__":
             f = open(path + "/" + file, "r")
             for line in f.readlines():
                 conf_file_content[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-	    actual_conf = aggregate_data(conf_file_content, argument_line_content)
-            command_list.append(actual_conf.copy())
-            file_counter += 1
+        actual_conf = aggregate_data(conf_file_content, argument_line_content)
+        command_list.append(actual_conf.copy())
+        file_counter += 1
 
     if file_counter == 0:
         actual_conf = aggregate_data(conf_file_content, argument_line_content)
