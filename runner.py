@@ -42,9 +42,9 @@ def aggregate_data(config, arg):
         result["testcase"] = config["tc"]
 
     if arg.n is not None:
-        result["nodetype"] = arg.n
+        result["node_type"] = arg.n
     elif "build" in config.keys():
-        result["nodetype"] = config["node_type"]
+        result["node_type"] = config["node_type"]
 
     if arg.r is not None:
         result["resource"] = arg.r
@@ -81,7 +81,7 @@ def write_out_file(config_list):
         of.write("---------------------\n")
         of.write("Build-id: " + item["buildid"] + "\n")
         of.write("Test Case: " + item["testcase"] + "\n")
-        of.write("Node Type: " + item["nodetype"] + "\n")
+        of.write("Node Type: " + item["node_type"] + "\n")
         of.write("https://epgweb.sero.wh.rnd.internal.ericsson.com/testviewer/job/" + str(item["jobid"]) + "\n")
         of.write("---------------------\n")
     of.close()
