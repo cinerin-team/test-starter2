@@ -94,7 +94,7 @@ def write_out_file(config_list):
 
 def local_argument_parser():
     parser = argparse.ArgumentParser(
-        description="use a .config file in the configs folder or the following switches. Required fileds (either in config or in parameter): build ID, TC+command, node type. The commandline parameter overrides the config file.")
+        description="use a .config file in the configs folder or the following switches. Required fields (either in config or in parameter): build ID, TC+command, node type. The command line parameter overrides the config file. For example: python runner.py -bi EPG_28R202EE1_231020_122336 -tc TC37512.4.6.11.23 -c \"go --duration=16h\" -n COTS_1_HOST_C14_U20VCPU_SRIOV -r vepg332-2 -m Dell640-18 -e \"/proj/epg_st_sandbox/ethnyz/PCEPGST-2587/epgcats240202/paths\" -d /lab/testtools/dallas/testRelease/eyuhkua/3R203B03_eyuhkua -a /lab/epg_st_utils/testtools/autott/LSV/R5A418")
     parser.add_argument('-bi', "--build-id", dest='bi',
                         help="specific build ID should be selected, not the config file's content. for example: --build-id EPG_28R190FE1_230823_155500",
                         required=False)
