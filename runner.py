@@ -1,7 +1,9 @@
 import argparse
 import os
-import subprocess
 from datetime import datetime
+from getpass import getpass
+
+import paramiko
 
 
 def create_command(config):
@@ -128,9 +130,19 @@ def local_argument_parser():
 
 def communication_and_getting_job_id(conf):
     print("executing: queue_run2.py " + create_command(conf))
-    output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    out, err = output.communicate()
+    # output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
+    #                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    # out, err = output.communicate()
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    username = input("Felhasználónév: ")
+    password = getpass("Jelszó: ")
+    client.connect("10.63.192.69", 22, username, password)
+
+    # Parancs kiadása
+    stdin, stdout, stderr = client.exec_command("queue_run2.py " + create_command(conf))
+    out = stdout.read().decode('utf-8')
+
     # print(out)
     out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
 
@@ -164,12 +176,14 @@ if __name__ == "__main__":
             f = open(path + "/" + file, "r")
             for line in f.readlines():
                 conf_file_content[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
-        actual_conf = aggregate_data(conf_file_content, argument_line_content)
-        command_list.append(actual_conf.copy())
-        file_counter += 1
+            actual_conf = aggregate_data(conf_file_content, argument_line_content)
+            command_list.append(actual_conf.copy())
+            file_counter += 1
 
     if file_counter == 0:
         actual_conf = aggregate_data(conf_file_content, argument_line_content)
         command_list.append(actual_conf)
 
     execute_commands(command_list, configs)
+
+    input()
