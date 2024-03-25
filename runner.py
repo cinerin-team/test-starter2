@@ -1,9 +1,62 @@
 import argparse
+import configparser
 import os
+import sys
+import time
 from datetime import datetime
-from getpass import getpass
 
 import paramiko
+from cryptography.fernet import Fernet
+
+
+def encrypt_password(password, key):
+    f = Fernet(key)
+    encrypted_password = f.encrypt(password.encode())
+    return encrypted_password
+
+
+def decrypt_password(encrypted_password, key):
+    f = Fernet(key)
+    decrypted_password = f.decrypt(encrypted_password).decode()
+    return decrypted_password
+
+
+def passwd_mgmnt():
+    password_and_repo_path = 'configs/pass_and_repo.ini'
+
+    # if password file is not exist, then create
+    if not os.path.exists(password_and_repo_path):
+        config = configparser.ConfigParser()
+        config['DEFAULT'] = {'password': '', 'username': '', 'repo': ''}
+        config['KEY'] = {'key': Fernet.generate_key().decode()}
+        with open(password_and_repo_path, 'w') as configfile:
+            config.write(configfile)
+        print("The config.ini is created. Please enter your username, password and epg directory in it. Do not worry! This will be encrypted on the second run.")
+        sys.exit(0)
+
+    # Configuration reading
+    config = configparser.ConfigParser()
+    config.read(password_and_repo_path)
+    password = config['DEFAULT']['password']
+    user = config['DEFAULT']['username']
+    repo = config['DEFAULT']['repo']
+    key = config['KEY']['key'].encode()
+
+    # Check if it is encrypted
+    if password.startswith('encrypted:'):
+        # if yes then decrypt
+        encrypted_password = password.encode()[len('encrypted:'):]
+        decrypted_password = decrypt_password(encrypted_password, key)
+        return {"user": user, "pass": decrypted_password, "repo": repo}
+    else:
+        # in not then encrypt
+        encrypted_password = encrypt_password(password, key)
+        config['DEFAULT']['password'] = 'encrypted:' + encrypted_password.decode()
+        config['DEFAULT']['username'] = user
+        with open(password_and_repo_path, 'w') as configfile:
+            config.write(configfile)
+        decrypted_password = decrypt_password(encrypted_password, key)
+        return {"user": user, "pass": decrypted_password, "repo": repo}
 
 
 def create_command(config):
@@ -128,30 +181,54 @@ def local_argument_parser():
     return parser.parse_args()
 
 
-def communication_and_getting_job_id(conf):
+def wait_for_prompt(channel, timeout=10):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        if channel.recv_ready():
+            return True
+        time.sleep(1)
+    return False
+
+
+def communication_and_getting_job_id(conf, credentials):
     print("executing: queue_run2.py " + create_command(conf))
-    # output = subprocess.Popen(["queue_run2.py " + create_command(conf)],
-    #                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    # out, err = output.communicate()
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    username = input("Felhasználónév: ")
-    password = getpass("Jelszó: ")
-    client.connect("10.63.192.69", 22, username, password)
+    client.connect("10.63.192.69", 22, credentials["user"], credentials["pass"])
 
-    # Parancs kiadása
-    stdin, stdout, stderr = client.exec_command("queue_run2.py " + create_command(conf))
-    out = stdout.read().decode('utf-8')
+    shell = client.invoke_shell()
 
-    # print(out)
-    out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
+    # setup_workspace
+    shell.send("cd " + credentials["repo"] + " && setup_workspace" + '\n')
 
-    return out.split("Enqueued job with id: ")[1].split(" and with split")[0]
+    # wait for the prompt
+    output = ''
+    if wait_for_prompt(shell):
+        while shell.recv_ready():
+            output += shell.recv(65535).decode('utf-8')
+        shell.send("queue_run2.py " + create_command(conf) + '\n')
+
+        # wait for the results
+        # TODO finetune the waiting time (10 was too short)
+        time.sleep(20)
+        while shell.recv_ready():
+            output += shell.recv(65535).decode('utf-8')
+
+    else:
+        print("Cannot wait for the prompt.")
+
+    shell.close()
+    client.close()
+
+    output = output.replace("\"", "").replace("\'", "").replace("\n", " ")
 
 
-def execute_commands(command_list_loc, configs):
+    return output.split("Enqueued job with id: ")[1].split(" and with split")[0]
+
+
+def execute_commands(command_list_loc, configs, credentials):
     for comm in command_list_loc:
-        job_id = communication_and_getting_job_id(comm)
+        job_id = communication_and_getting_job_id(comm, credentials)
         comm["jobid"] = job_id
         configs.append(
             comm.copy())  # copy is needed because without it when we clear the actual_conf, the array item will be cleared as well
@@ -160,6 +237,7 @@ def execute_commands(command_list_loc, configs):
 
 
 if __name__ == "__main__":
+    credentials = passwd_mgmnt()
     path = "configs"
     dir_list = os.listdir(path)
     conf_file_content = {}
@@ -184,6 +262,5 @@ if __name__ == "__main__":
         actual_conf = aggregate_data(conf_file_content, argument_line_content)
         command_list.append(actual_conf)
 
-    execute_commands(command_list, configs)
+    execute_commands(command_list, configs, credentials)
 
-    input()
