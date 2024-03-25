@@ -1,5 +1,4 @@
 import argparse
-import configparser
 import os
 import sys
 import time
@@ -26,23 +25,30 @@ def passwd_mgmnt():
 
     # if password file is not exist, then create
     if not os.path.exists(password_and_repo_path):
-        config = configparser.ConfigParser()
-        config['DEFAULT'] = {'password': '', 'username': '', 'repo': ''}
-        config['KEY'] = {'key': Fernet.generate_key().decode()}
         with open(password_and_repo_path, 'w') as configfile:
-            config.write(configfile)
-        print("The config.ini is created. Please enter your username, password and epg directory in it. Do not worry! This will be encrypted on the second run.")
+            configfile.write("repo: \n")
+            configfile.write("username: \n")
+            configfile.write("password: \n")
+            configfile.write("key: " + Fernet.generate_key().decode() + "\n")
+        print(
+            "The config.ini is created. Please enter your username, password and epg directory in it. Do not worry! This will be encrypted on the second run.")
         sys.exit(0)
 
     # Configuration reading
-    config = configparser.ConfigParser()
-    config.read(password_and_repo_path)
-    password = config['DEFAULT']['password']
-    user = config['DEFAULT']['username']
-    repo = config['DEFAULT']['repo']
-    key = config['KEY']['key'].encode()
+    with open(password_and_repo_path, 'r') as configfile:
+        lines = configfile.readlines()
+        for i in lines:
+            if i.startswith("repo"):
+                repo = i.split("repo:")[1].strip()
+            if i.startswith("username"):
+                user = i.split("username:")[1].strip()
+            if i.startswith("password"):
+                password = i.split("password:")[1].strip()
+            if i.startswith("key"):
+                key = i.split("key:")[1].strip().encode()
 
     # Check if it is encrypted
+    # TODO use the encrypted pass in code and decrypt when it is used
     if password.startswith('encrypted:'):
         # if yes then decrypt
         encrypted_password = password.encode()[len('encrypted:'):]
@@ -51,10 +57,13 @@ def passwd_mgmnt():
     else:
         # in not then encrypt
         encrypted_password = encrypt_password(password, key)
-        config['DEFAULT']['password'] = 'encrypted:' + encrypted_password.decode()
-        config['DEFAULT']['username'] = user
+        password = 'encrypted:' + encrypted_password.decode()
+
         with open(password_and_repo_path, 'w') as configfile:
-            config.write(configfile)
+            configfile.write("repo: " + repo + "\n")
+            configfile.write("username: " + user + "\n")
+            configfile.write("password: " + password + "\n")
+            configfile.write("key: " + key.decode('ascii') + "\n")
         decrypted_password = decrypt_password(encrypted_password, key)
         return {"user": user, "pass": decrypted_password, "repo": repo}
 
@@ -222,7 +231,6 @@ def communication_and_getting_job_id(conf, credentials):
 
     output = output.replace("\"", "").replace("\'", "").replace("\n", " ")
 
-
     return output.split("Enqueued job with id: ")[1].split(" and with split")[0]
 
 
@@ -263,4 +271,3 @@ if __name__ == "__main__":
         command_list.append(actual_conf)
 
     execute_commands(command_list, configs, credentials)
-
