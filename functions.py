@@ -5,7 +5,6 @@ import sys
 import time
 from datetime import datetime
 
-import paramiko
 from cryptography.fernet import Fernet
 
 
@@ -211,6 +210,7 @@ def local_env(conf):
 
 
 def remote_env(conf):
+    import paramiko
     credentials = passwd_mgmnt()
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
