@@ -5,22 +5,23 @@ import sys
 import time
 from datetime import datetime
 
-from cryptography.fernet import Fernet
-
 
 def encrypt_password(password, key):
+    from cryptography.fernet import Fernet
     f = Fernet(key)
     encrypted_password = f.encrypt(password.encode())
     return encrypted_password
 
 
 def decrypt_password(encrypted_password, key):
+    from cryptography.fernet import Fernet
     f = Fernet(key)
     decrypted_password = f.decrypt(encrypted_password).decode()
     return decrypted_password
 
 
 def passwd_mgmnt():
+    from cryptography.fernet import Fernet
     password_and_repo_path = 'configs/pass_and_repo.ini'
 
     # if password file is not exist, then create
