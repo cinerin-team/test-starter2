@@ -1,5 +1,6 @@
 import argparse
 import os
+import socket
 import subprocess
 import sys
 import time
@@ -246,7 +247,7 @@ def remote_env(conf):
 
 def communication_and_getting_job_id(conf):
     print("executing: queue_run2.py " + create_command(conf))
-    host = os.getenv('COMPUTERNAME')
+    host = socket.gethostname()
     if host.startswith("seroiuts"):
         output = local_env(conf)
     else:
