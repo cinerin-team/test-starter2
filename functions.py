@@ -5,8 +5,6 @@ import subprocess
 import time
 from datetime import datetime
 
-from configs.PasswdMgmt import PasswdMgmt
-
 
 def build_executable_command(config):
     result = "autott"
@@ -160,6 +158,8 @@ def running_from_seroiuts_repo(conf):
 
 
 def running_from_local_repo(conf):
+    from configs.PasswdMgmt import PasswdMgmt
+
     import paramiko
     credentials = PasswdMgmt()
     client = paramiko.SSHClient()
