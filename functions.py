@@ -2,72 +2,10 @@ import argparse
 import os
 import socket
 import subprocess
-import sys
 import time
 from datetime import datetime
 
-
-def encrypt_password(password, key):
-    from cryptography.fernet import Fernet
-    f = Fernet(key)
-    encrypted_password = f.encrypt(password.encode())
-    return encrypted_password
-
-
-def decrypt_password(encrypted_password, key):
-    from cryptography.fernet import Fernet
-    f = Fernet(key)
-    decrypted_password = f.decrypt(encrypted_password).decode()
-    return decrypted_password
-
-
-def passwd_mgmt():
-    from cryptography.fernet import Fernet
-    password_and_repo_path = 'configs/pass_and_repo.ini'
-
-    # if password file is not exist, then create
-    if not os.path.exists(password_and_repo_path):
-        with open(password_and_repo_path, 'w') as configfile:
-            configfile.write("repo: \n")
-            configfile.write("username: \n")
-            configfile.write("password: \n")
-            configfile.write("key: " + Fernet.generate_key().decode() + "\n")
-        print(
-            "The config.ini is created. Please enter your username, password and epg directory in it. Do not worry! "
-            "This will be encrypted on the second run.")
-        sys.exit(0)
-
-    # Configuration reading
-    with open(password_and_repo_path, 'r') as configfile:
-        lines = configfile.readlines()
-        for i in lines:
-            if i.startswith("repo"):
-                repo = i.split("repo:")[1].strip()
-            if i.startswith("username"):
-                user = i.split("username:")[1].strip()
-            if i.startswith("password"):
-                password = i.split("password:")[1].strip()
-            if i.startswith("key"):
-                key = i.split("key:")[1].strip().encode()
-
-    # Check if it is encrypted
-    if password.startswith('encrypted:'):
-        # if yes then decrypt
-        encrypted_password = password.encode()[len('encrypted:'):]
-        # decrypted_password = decrypt_password(encrypted_password, key)
-        return {"user": user, "pass": encrypted_password, "repo": repo, "key": key}
-    else:
-        # in not then encrypt
-        encrypted_password = encrypt_password(password, key)
-        password = 'encrypted:' + encrypted_password.decode()
-
-        with open(password_and_repo_path, 'w') as configfile:
-            configfile.write("repo: " + repo + "\n")
-            configfile.write("username: " + user + "\n")
-            configfile.write("password: " + password + "\n")
-            configfile.write("key: " + key.decode('ascii') + "\n")
-        # decrypted_password = decrypt_password(encrypted_password, key)
-        return {"user": user, "pass": encrypted_password, "repo": repo, "key": key}
+from configs.password_mgmt import PasswdMgmt
 
 
 def build_executable_command(config):
@@ -223,15 +161,15 @@ def running_from_seroiuts_repo(conf):
 
 def running_from_local_repo(conf):
     import paramiko
-    credentials = passwd_mgmt()
+    credentials = PasswdMgmt()
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect("10.63.192.69", 22, credentials["user"], decrypt_password(credentials["pass"], credentials['key']))
+    client.connect("10.63.192.69", 22, credentials.get_username(), credentials.get_password())
 
     shell = client.invoke_shell()
 
     # setup_workspace
-    shell.send("cd " + credentials["repo"] + " && setup_workspace" + '\n')
+    shell.send("cd " + credentials.repo + " && setup_workspace\n")
 
     # wait for the prompt
     output = ''
