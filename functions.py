@@ -5,9 +5,6 @@ import subprocess
 import time
 from datetime import datetime
 
-from PasswdMgmt import PasswdMgmt
-
-
 def build_executable_command(config):
     result = "autott"
     if "buildid" in config.keys():
@@ -160,6 +157,8 @@ def running_from_seroiuts_repo(conf):
 
 
 def running_from_local_repo(conf):
+    from PasswdMgmt import PasswdMgmt
+
     import paramiko
     credentials = PasswdMgmt()
     client = paramiko.SSHClient()
