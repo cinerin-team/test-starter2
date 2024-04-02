@@ -60,7 +60,6 @@ class PasswdMgmt:
 
         # Check if it is encrypted
         if not self.password.startswith('encrypted:'):
-
             # in not then encrypt
             encrypted_password = self.encrypt_password()
             self.password = 'encrypted:' + encrypted_password.decode()

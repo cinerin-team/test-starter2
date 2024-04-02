@@ -5,7 +5,7 @@ import subprocess
 import time
 from datetime import datetime
 
-from configs.password_mgmt import PasswdMgmt
+from configs.PasswdMgmt import PasswdMgmt
 
 
 def build_executable_command(config):
