@@ -68,4 +68,4 @@ class PasswdMgmt:
                 configfile.write("repo: " + self.repo + "\n")
                 configfile.write("username: " + self.username + "\n")
                 configfile.write("password: " + self.password + "\n")
-                configfile.write("key: " + self.key.decode('ascii') + "\n")
+                configfile.write("key: {0}\n".format(self.key.decode('ascii')))

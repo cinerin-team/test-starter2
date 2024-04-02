@@ -5,6 +5,7 @@ import subprocess
 import time
 from datetime import datetime
 
+
 def build_executable_command(config):
     result = "autott"
     if "buildid" in config.keys():
@@ -156,7 +157,7 @@ def running_from_seroiuts_repo(conf):
     return out
 
 
-def running_from_local_repo(conf):
+def running_from_local_repo_with_ssh(conf):
     from PasswdMgmt import PasswdMgmt
 
     import paramiko
@@ -197,7 +198,7 @@ def executing_one_command_and_getting_job_id_from_it(conf):
     if host.startswith("seroiuts"):
         output = running_from_seroiuts_repo(conf)
     else:
-        output = running_from_local_repo(conf)
+        output = running_from_local_repo_with_ssh(conf)
 
     output = output.replace("\"", "").replace("\'", "").replace("\n", " ")
 
