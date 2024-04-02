@@ -226,11 +226,11 @@ def collect_commands(path):
     argument_line_content = local_argument_parser()
     file_counter = 0
     # collect from config files
-    for file in dir_list:
-        if file.endswith(".config"):
+    for files in dir_list:
+        if files.endswith(".config"):
             conf_file_content.clear()
             actual_conf.clear()
-            f = open(path + "/" + file, "r")
+            f = open(path + "/" + files, "r")
             for line in f.readlines():
                 conf_file_content[line.split(": ")[0]] = line.split(": ")[1].rstrip("\n")
             actual_conf = aggregate_data_from_config_and_commandline(conf_file_content, argument_line_content)
