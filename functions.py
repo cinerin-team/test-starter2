@@ -164,7 +164,7 @@ def running_from_local_repo_with_ssh(conf):
     credentials = PasswdMgmt()
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect("10.63.192.69", 22, credentials.get_username(), credentials.get_password())
+    client.connect(credentials.ger_address(), 22, credentials.get_username(), credentials.get_password())
 
     shell = client.invoke_shell()
 

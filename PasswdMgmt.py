@@ -9,6 +9,7 @@ class PasswdMgmt:
     username = None
     password = None
     key = None
+    address = None
 
     password_and_repo_path = 'configs/pass_and_repo.ini'
 
@@ -20,6 +21,9 @@ class PasswdMgmt:
 
     def get_password(self):
         return self.decrypt_password()
+
+    def ger_address(self):
+        return self.address
 
     def encrypt_password(self):
         f = Fernet(self.key)
@@ -38,6 +42,7 @@ class PasswdMgmt:
             with open(self.password_and_repo_path, 'w') as configfile:
                 configfile.write("repo: \n")
                 configfile.write("username: \n")
+                configfile.write("address: \n")
                 configfile.write("password: \n")
                 configfile.write("key: " + Fernet.generate_key().decode() + "\n")
             print(
@@ -55,6 +60,8 @@ class PasswdMgmt:
                     self.username = i.split("username:")[1].strip()
                 if i.startswith("password"):
                     self.password = i.split("password:")[1].strip()
+                if i.startswith("address"):
+                    self.address = i.split("address:")[1].strip()
                 if i.startswith("key"):
                     self.key = i.split("key:")[1].strip().encode()
 
@@ -67,5 +74,6 @@ class PasswdMgmt:
             with open(self.password_and_repo_path, 'w') as configfile:
                 configfile.write("repo: " + self.repo + "\n")
                 configfile.write("username: " + self.username + "\n")
+                configfile.write("address: " + self.address + "\n")
                 configfile.write("password: " + self.password + "\n")
                 configfile.write("key: {0}\n".format(self.key.decode('ascii')))
