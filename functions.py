@@ -152,7 +152,7 @@ def running_from_seroiuts_repo(conf):
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out, err = output.communicate()
     # print(out)
-    out = out.replace("\"", "").replace("\'", "").replace("\n", " ")
+    out = out.decode().replace("\"", "").replace("\'", "").replace("\n", " ")
 
     return out
 
