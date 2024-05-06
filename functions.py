@@ -133,6 +133,10 @@ def local_argument_parser():
     parser.add_argument('-a', "--autott-path", dest='a',
                         help="to run on specific autott path.",
                         required=False)
+    parser.add_argument('-s', "--suite", dest='s',
+                        help="if a preset suite available in the config-suites folder, then give the exact folder. "
+                             "like: --suite miki_release",
+                        required=False)
 
     return parser.parse_args()
 
@@ -218,12 +222,14 @@ def process_collected_commands_from_files_or_commandline(command_list_loc):
 
 
 def collect_commands(path):
+    argument_line_content = local_argument_parser()
+    if argument_line_content.s is not None:
+        path = "config-suties/" + argument_line_content.s
     dir_list = os.listdir(path)
     conf_file_content = {}
     actual_conf = {}
     command_list = []
 
-    argument_line_content = local_argument_parser()
     file_counter = 0
     # collect from config files
     for files in dir_list:
