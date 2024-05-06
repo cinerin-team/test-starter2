@@ -135,7 +135,7 @@ def local_argument_parser():
                         required=False)
     parser.add_argument('-s', "--suite", dest='s',
                         help="if a preset suite available in the config-suites folder, then give the exact folder. "
-                             "like: --suite miki_release",
+                             "like: --suite miki_release_w1",
                         required=False)
 
     return parser.parse_args()
