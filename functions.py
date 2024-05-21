@@ -224,7 +224,7 @@ def process_collected_commands_from_files_or_commandline(command_list_loc):
 def collect_commands(path):
     argument_line_content = local_argument_parser()
     if argument_line_content.s is not None:
-        path = "config-suties/" + argument_line_content.s
+        path = "config-suites/" + argument_line_content.s
     dir_list = os.listdir(path)
     conf_file_content = {}
     actual_conf = {}
