@@ -1,4 +1,4 @@
 tc: TC1123.1.6.1.1
-node_type: cots_1_host_8vcpu
+node_type: cots_1_host_C14U20vcpu_sriov
 command: go --duration=12h
 build: EPG_28R201HY1_230901_100413
